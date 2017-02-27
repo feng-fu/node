@@ -1,0 +1,20 @@
+var path = require('path')
+
+var express = require('express')
+// router
+var indexRouter = require('./router/index')
+var userRouter = require('./router/users')
+
+var app = express()
+
+var port = 1000
+
+app.set('views', path.join(__dirname, 'views'))
+app.set('view engine', 'ejs')
+
+app.use('/', indexRouter)
+app.use('/user',userRouter)
+
+app.listen(port)
+
+console.log(`server in 127.0.0.1:${port}`)

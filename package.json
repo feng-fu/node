@@ -1,0 +1,23 @@
+{
+  "name": "node",
+  "version": "0.0.1",
+  "description": "node learn",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/feng-fu/node.git"
+  },
+  "author": "duocai",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/feng-fu/node/issues"
+  },
+  "homepage": "https://github.com/feng-fu/node#readme",
+  "dependencies": {
+    "ejs": "^2.5.6",
+    "express": "^4.14.0"
+  }
+}
