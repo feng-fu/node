@@ -4,6 +4,9 @@ var cheerio = require('cheerio')
 var app = express()
 
 var jdUrl = 'https://www.jd.com/'
+
+var followPath = '6728-6747.html'
+
 var port = 8080
 
 var cate_menu = []
@@ -30,15 +33,30 @@ superagent.get(jdUrl, (err, res) => {
 		obj.detail = cate_menu_item
 		cate_menu.push(obj)
 	})
-
+	var n = 0;
 	$('.cate_detail_con_lk').each((index, element) => {
 		var $element = $(element)
 		cate.push($element.text())
 	})
 })
 
+
+superagent.get(jdUrl + followPath, (err, res) => {
+	if(err) {
+		console.error(err)
+	}
+	var $ = cheerio.load(res.text)
+
+	$('.item li a').each((index, element) => {
+		let $element = $(element)
+		cate.push($element.text())
+	})
+
+})
+
+
 app.get('/',(req, res) => {
-	res.send(cate)
+	res.send(cate_menu)
 }).listen(port,(req, res) => {
 	console.log(`server in ${port}`)
 })
