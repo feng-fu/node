@@ -8,6 +8,8 @@ var port = 8080
 
 var cate_menu = []
 
+var cate = []
+
 superagent.get(jdUrl, (err, res) => {
 	if (err) {
 		console.error(err)
@@ -28,10 +30,15 @@ superagent.get(jdUrl, (err, res) => {
 		obj.detail = cate_menu_item
 		cate_menu.push(obj)
 	})
+
+	$('.cate_detail_con_lk').each((index, element) => {
+		var $element = $(element)
+		cate.push($element.text())
+	})
 })
 
 app.get('/',(req, res) => {
-	res.send(cate_menu)
+	res.send(cate)
 }).listen(port,(req, res) => {
 	console.log(`server in ${port}`)
 })
