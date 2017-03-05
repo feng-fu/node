@@ -1,25 +1,35 @@
-var express = require('express')
-var app = express()
-var superagent = require('superagent')
-var cheerio = require('cheerio')
-var port = 3000
+const express = require('express')
+const app = express()
+const superagent = require('superagent')
+const cheerio = require('cheerio')
+const port = 3000
+
+const pathUrl = 'http://www.dy2018.com'
 
 app.use('/', (req,response) => {
-	superagent.get('https://cnodejs.org/').end((err,res) => {
+	superagent.get(pathUrl).end((err,res) => {
 		if (err) {
 			return next(err)
 		}
 		var $ = cheerio.load(res.text)
-		var item = []
-		$('#topic_list .topic_title').each((idx,element) => {
+
+		var item = [],title = []
+		$('.menu').each((idx,element) => {
 			var $element = $(element)
-			item.push({
-				title: $element.attr('title'),
-				href: $element.attr('href'),
-				logginname: $element.attr('class')
-			})
+			console.log(1)
+			item.push($element.attr('href'))
 		})
-		response.send(item);
+
+		for (var i in item) {
+			superagent.get(pathUrl + item[i]).end((err,res) => {
+				$('.co_area2 co_content8 b').each((index, element) => {
+					let $element = $(element)
+					title.push($element.text())
+				})
+			})
+		}
+		console.log(title, item)
+		response.send(title)
 	})
 })
 

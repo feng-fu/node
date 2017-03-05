@@ -21,9 +21,12 @@ for(let i = 0;i < shop_id.length;i++){
 		}
 		var $ = cheerio.load(res.text)
 
-		var shop_name = $('.j-shopHeader')
-		console.log(shop_name)
-		shop_name_arr.push(shop_name)
+		$('.j-shopHeader').each((index, content) => {
+			console.log(content)
+			var shop_name = $(content)
+			console.log(shop_name)
+			shop_name_arr.push(shop_name)
+		})
 	})
 }
 
