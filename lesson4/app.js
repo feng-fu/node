@@ -27,7 +27,7 @@ superagent.get(cnodeUrl).end((err, res) => {
 
 var ep = new eventproxy()
 
-ep.after('topic_html', topicUrls.length, function (topics) {
+ep.after('.topic_html', topicUrls.length, function (topics) {
   topics = topics.map(function(topicPair) {
     var topicUrl = topicPair[0]
     var topicHtml = topicPair[1]
@@ -45,5 +45,5 @@ ep.after('topic_html', topicUrls.length, function (topics) {
 app.get('/',(req, res) => {
   res.send(response)
 }).listen(3000, (req, res) => {
-  console.log(`server in 3000`)
+  console.log(`server in 127.0.0.1:3000`)
 })
