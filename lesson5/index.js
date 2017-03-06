@@ -3,7 +3,7 @@ const cheerio = require('cheerio')
 const url = require('url')
 const superagent = require('superagent')
 const eventproxy = require('eventproxy')
-const urlPath = 'https://cnodejs.org'
+const urlPath = 'https://jd.com'
 var currentCount = 0
 
 superagent.get(urlPath).end((err, res) => {
@@ -13,7 +13,7 @@ superagent.get(urlPath).end((err, res) => {
 	$ = cheerio.load(res.text)
 	var topic_list = []
 	var title_list = []
-	$('#topic_list .topic_title').each((index, element) => {
+	$('.fs a').each((index, element) => {
 		var $element  = $(element)
 		topic_list.push(url.resolve(urlPath, $element.attr('href')))
 	})
@@ -24,7 +24,7 @@ superagent.get(urlPath).end((err, res) => {
 		console.log(`everything down ${title_list}`)
 	})
 
-	async.mapLimit(topic_list, 5, function (url, callback) {
+	async.mapLimit(topic_list, 2, function (url, callback) {
 	  fetchUrl(url, callback);
 	}, function (err, result) {
 	  console.log(`final:${result.length}`);
@@ -33,12 +33,24 @@ superagent.get(urlPath).end((err, res) => {
 	function fetchUrl (url, callback) {
 		console.log(++currentCount)
 		superagent.get(url).end((err, res) => {
+			if(err){
+				console.log(err)
+			}
     	--currentCount
-			$ = cheerio.load(res.text)
-			console.log('in')
-			title_list.push($('.topic_full_title').text())
-			ep.emit('send_msg')
+    	console.log('in')
+    	ep.emit('send_msg')
     	callback(null, 1)
+			try
+			{
+      	$ = cheerio.load(res.text)
+			}
+			catch(err)
+			{
+				console.log(`err ocurred`)
+				return
+			}
+
+			title_list.push($('div').eq(20).text())
 		})
 	};
 })
