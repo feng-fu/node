@@ -4,13 +4,17 @@ const superagent = require('superagent')
 const cheerio = require('cheerio')
 const port = 3000
 const fs = require('fs')
+const eventproxy = require('eventproxy')
 
 const pathUrl = 'http://www.mm131.com/'
+const async = require('async')
+var page_content = ''
+const ep = new eventproxy()
 
 app.use('/', (req,response) => {
 	superagent.get(pathUrl).end((err,res) => {
 		if (err) {
-			return next(err)
+			return console.log(err)
 		}
 
 		var $ = cheerio.load(res.text)
@@ -22,13 +26,21 @@ app.use('/', (req,response) => {
 		})
 
 		for (let i = 0;i < item.length;i++) {
-			superagent.get(item[i]).end((err,res) => {
+			let completeUrl = pathUrl + item[i]
+			superagent.get(completeUrl).end((err,res) => {
 				if(err){
 					console.error(err)
 				}
-				var $ = cheerio.load(res.text)
+				try{	
+					var $ = cheerio.load(res.text)
+				}catch(err){
+					return
+				}
 
 				let pageArr = []
+				let countNum = 0
+				let picAddress = []
+
 
 				$('.content-page a').each((index, element) => {
 					let $element = $(element)
@@ -36,26 +48,56 @@ app.use('/', (req,response) => {
 					pageArr.push(address)
 				})
 
+				for(let i = 0;i < pageArr.length;i++) {
+					countNum++
+					picAddress[countNum] = {}
+					let completeUrl = pathUrl + pageArr[i]
+					superagent.get(completeUrl).end((err,res) => {
+						ep.emit('req_down')
+						try{
+							let $ = cheerio.load(res.text)
+						}catch(err){
+							return;
+						}
+						$('.content-page a').each((index, element) => {
+							let $element = $(element)
+							picAddress[countNum][i] = $element[0].attribs.href
+						})
+					})
+				}
+				ep.after('push_msg',picAddress.length,(err, res) => {
+					app.send(page_content)
+				})
+
+
 				//  需要消除移步问题
+				ep.after('req_down',picAddress.length,(err,res) => {
+					async.mapLimit(picAddress,1,(detail,callback) => {
+						getPageDetail(detail,callback)
+					},(err,result) => {
+						console.log(result)
+					})
+				})
 
 
-
-				$('.content-pic img').each((index, element) => {
-					let $element = $(element)
-					let imgHtml = `<img src=${$element[0].attribs.src}>`
-					// title.push($element.attribs.src)
-					title += imgHtml
-					if(i === item.length - 1){
-
-						response.send(title)
-						fs.writeFile('img.html', title, (err, res) => {
-							if(err){attribs
-								return console.error(err)
+				function getPageDetail(detail, callback){
+					for(let i in detail){
+						console.log(i)
+						let requestUrl = pathUrl + detail[i]
+						superagent.get(requestUrl).end((err, res) => {
+							if(err) console.log(err)
+								eq.emit('push_msg')
+							try {
+								var $ = cheerio.load(res.text)
+							}catch(err){
+								return
 							}
-							console.log(`success write`)
+							console.log($('.content-pic img').attr('src'))
+							page_content += '<img src=' + $('.content-pic img').attr('src') + '>'
+							callback(null,1)
 						})
 					}
-				})
+				}
 			})
 		}
 	})
