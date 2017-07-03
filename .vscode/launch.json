@@ -8,13 +8,21 @@
       "type": "node",
       "request": "launch",
       "name": "启动程序",
+<<<<<<< HEAD
       "program": "${file}"
+=======
+      "program": "${file}",
+      "cwd": "${workspaceRoot}"
+>>>>>>> 6bb33a44439f1e26b04228f144d1649fb98edebb
     },
     {
       "type": "node",
       "request": "attach",
       "name": "附加到进程",
+<<<<<<< HEAD
       "address": "localhost",
+=======
+>>>>>>> 6bb33a44439f1e26b04228f144d1649fb98edebb
       "port": 5858
     }
   ]
